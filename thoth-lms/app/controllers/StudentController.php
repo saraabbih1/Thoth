@@ -76,6 +76,36 @@ class StudentController extends BaseController
             exit;
         }
     }
+    // afficher formulaire register
+public function register()
+{
+    $this->render('students/register');
+}
+
+// traiter formulaire register
+public function storeRegister()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $name     = $_POST['name'] ?? '';
+        $email    = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        if (empty($name) || empty($email) || empty($password)) {
+            $this->render('students/register', [
+                'error' => 'Tous les champs sont obligatoires'
+            ]);
+            return;
+        }
+
+        $this->studentModel->register($name, $email, $password);
+
+        // redirect login
+        header('Location: /login');
+        exit;
+    }
+}
+
 
     // supprimer étudiant
     public function delete($id)
@@ -85,4 +115,5 @@ class StudentController extends BaseController
         header('Location: index.php?action=students');
         exit;
     }
+
 }

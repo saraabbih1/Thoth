@@ -7,7 +7,12 @@
         $database = new Database();
         $this->db = $database->pdo;
     }
-
+  
+    public function getAll(){
+        $sql="select * from students";
+       $stmt= $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function register($name,$email,$password){
         $hashedPassword = password_hash($password,PASSWORD_DEFAULT);
         $sql = "INSERT INTO student (name,email,password)VALUES(?,?,?)";

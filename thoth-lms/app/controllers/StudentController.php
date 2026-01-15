@@ -11,5 +11,10 @@ class StudentController extends BaseController{
         $student = $this->studentModel->getAll();
         $this->render('students/index',['students=>$students']);
     }
-
+ //form
+ 
+  public function create()
+    {
+        $this->render('students/create');
+    }
 }

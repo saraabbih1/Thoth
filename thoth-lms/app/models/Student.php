@@ -1,5 +1,9 @@
 <?php
- class student {
+
+require_once __DIR__ . '/../core/Database.php';
+
+class Student
+{
     private $db;
 
     public function __construct()
@@ -7,33 +11,63 @@
         $database = new Database();
         $this->db = $database->pdo;
     }
-  
-    public function getAll(){
-        $sql="select * from students";
-       $stmt= $this->db->query($sql);
+
+    // get all students
+    public function getAll()
+    {
+        $sql = "SELECT * FROM students";
+        $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function register($name,$email,$password){
-        $hashedPassword = password_hash($password,PASSWORD_DEFAULT);
-        $sql = "INSERT INTO student (name,email,password)VALUES(?,?,?)";
+    public function update($id, $name, $email)
+{
+    $sql = "UPDATE students SET name = ?, email = ? WHERE id = ?";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([$name, $email, $id]);
+}
+
+public function delete($id)
+{
+    $sql = "DELETE FROM students WHERE id = ?";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([$id]);
+}
+
+
+    // register student
+    public function register($name, $email, $password)
+    {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO students (name, email, password) VALUES (?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$name,$email,$hashedPassword]);
+
+        return $stmt->execute([$name, $email, $hashedPassword]);
     }
-    public function authentificate($email,$password){
-        $sql = "SELECT * FROM student WHERE email =?";
-        $stmt=$this->db->prepare($sql);
+
+    // login 
+    public function authenticate($email, $password)
+    {
+        $sql = "SELECT * FROM students WHERE email = ?";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$email]);
 
         $student = $stmt->fetch(PDO::FETCH_ASSOC);
-        if($student && password_verify($password,$student['password'])){
+
+        if ($student && password_verify($password, $student['password'])) {
             return $student;
         }
+
         return false;
     }
-    public function findById($id){
+
+    // find student by id
+    public function findById($id)
+    {
         $sql = "SELECT * FROM students WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
+
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
- }
+}

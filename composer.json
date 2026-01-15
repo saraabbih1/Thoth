@@ -1,0 +1,15 @@
+{
+    "name": "pc/thoth",
+    "autoload": {
+        "psr-4": {
+            "Pc\\Thoth\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "saraabbih1",
+            "email": "abbihsara30@gmail.com"
+        }
+    ],
+    "require": {}
+}

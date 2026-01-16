@@ -43,7 +43,7 @@ class StudentController extends BaseController
 
             $this->studentModel->register($name, $email, '123456');
 
-            header('Location: index.php?action=students');
+            header('Location: /students');
             exit;
         }
     }
@@ -77,34 +77,34 @@ class StudentController extends BaseController
         }
     }
     // afficher formulaire register
-public function register()
-{
-    $this->render('students/register');
-}
-
-// traiter formulaire register
-public function storeRegister()
-{
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-        $name     = $_POST['name'] ?? '';
-        $email    = $_POST['email'] ?? '';
-        $password = $_POST['password'] ?? '';
-
-        if (empty($name) || empty($email) || empty($password)) {
-            $this->render('students/register', [
-                'error' => 'Tous les champs sont obligatoires'
-            ]);
-            return;
-        }
-
-        $this->studentModel->register($name, $email, $password);
-
-        // redirect login
-        header('Location: /login');
-        exit;
+    public function register()
+    {
+        $this->render('students/register');
     }
-}
+
+    // traiter formulaire register
+    public function storeRegister()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $name     = $_POST['name'] ?? '';
+            $email    = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
+
+            if (empty($name) || empty($email) || empty($password)) {
+                $this->render('students/register', [
+                    'error' => 'Tous les champs sont obligatoires'
+                ]);
+                return;
+            }
+
+            $this->studentModel->register($name, $email, $password);
+
+            // redirect login
+            header('Location: /login');
+            exit;
+        }
+    }
 
 
     // supprimer étudiant
@@ -115,5 +115,4 @@ public function storeRegister()
         header('Location: index.php?action=students');
         exit;
     }
-
 }

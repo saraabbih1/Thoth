@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS students (
-    id INT auto_increment PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(150) NOT NULL 
+    password VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE if NOT EXISTS courses(

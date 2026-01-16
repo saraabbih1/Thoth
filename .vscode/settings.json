@@ -23,7 +23,8 @@
             "driver": "MySQL",
             "name": "toth",
             "database": "toth",
-            "username": "root"
+            "username": "root",
+            "password": "root"
         }
     ]
 }

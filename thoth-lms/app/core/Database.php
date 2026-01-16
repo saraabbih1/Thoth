@@ -1,9 +1,9 @@
 <?php
 class Database {
     private $host = 'localhost';
-    private $dbname = 'thoth_lms';
+    private $dbname = 'toth';
     private $username = 'root';
-    private $password = '';
+    private $password = 'root';
     public $pdo;
 
     public function __construct() {

@@ -12,6 +12,29 @@ class StudentController extends BaseController
         $this->studentModel = new Student();
     }
 
+    // afficher le dashboard avec tous les cours et les cours de l'étudiant
+public function dashboard() {
+    // vérifier que l'étudiant est connecté
+    if (!Auth::check()) {
+        header("Location: /login");
+        exit;
+    }
+
+    // récupérer tous les cours
+    $courseModel = new Course(); // Assure-toi que Course.php existe dans models
+    $courses = $courseModel->getAll();
+
+    // récupérer les cours de l'étudiant connecté
+    $myCourses = $this->studentModel->getCourses();
+
+    // envoyer les données à la vue dashboard
+    $this->render('student/dashboard', [
+        'courses'   => $courses,
+        'myCourses' => $myCourses
+    ]);
+}
+
+
     // afficher tous les étudiants
     public function index()
     {

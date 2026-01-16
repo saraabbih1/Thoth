@@ -18,7 +18,7 @@ class Router
     {
         $path = parse_url($uri, PHP_URL_PATH); // /students
         $method = $_SERVER['REQUEST_METHOD']; // GET
-        $action = $this->routes[$method][$path] ?? null; // ['HomeController', 'students']
+        $action = $this->routes[$method][$path] ?? null; // ['basecontroler', 'students']
 
         if (!$action) {
             http_response_code(404);

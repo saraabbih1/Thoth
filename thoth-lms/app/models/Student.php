@@ -70,4 +70,15 @@ public function delete($id)
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getCourses($student_id) {
+    $sql = "SELECT c.* 
+            FROM courses c
+            INNER JOIN enrollments e ON c.id = e.course_id
+            WHERE e.student_id = ?";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$student_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

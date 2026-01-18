@@ -80,5 +80,15 @@ public function delete($id)
     $stmt->execute([$student_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+// find student by email  
+public function findByEmail($email)
+{
+    $sql = "SELECT * FROM students WHERE email = ?";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$email]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 
 }

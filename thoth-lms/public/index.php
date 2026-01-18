@@ -1,10 +1,11 @@
 <?php
+session_start();
 
 require_once __DIR__ . '/../core/Router.php';
 
 $router = new Router();
 
-/* Students */
+/* Student routes */
 $router->get('/students', ['StudentController', 'index']);
 $router->get('/students/create', ['StudentController', 'create']);
 $router->post('/students/store', ['StudentController', 'store']);
@@ -13,10 +14,19 @@ $router->get('/students/edit', ['StudentController', 'edit']);
 $router->post('/students/update', ['StudentController', 'update']);
 
 $router->post('/students/delete', ['StudentController', 'delete']);
+$router->get('/student/dashboard', ['StudentController', 'dashboard']);
+$router->post('/student/enroll', ['StudentController', 'enroll']);
 
-/* Register */
+/* Authentication routes */
 $router->get('/register', ['StudentController', 'register']);
 $router->post('/register', ['StudentController', 'storeRegister']);
+//$router->get('/login', ['StudentController', 'login']);
+//$router->post('/login', ['StudentController', 'storeLogin']);
+//$router->get('/logout', ['StudentController', 'logout']);
+$router->get('/login', ['StudentController', 'login']);
+$router->post('/login', ['StudentController', 'login']);
 
-/* Dispatch */
+
+
+/* Dispatch the router */
 $router->dispatch($_SERVER['REQUEST_URI']);

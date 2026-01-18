@@ -1,41 +1,106 @@
 <?php
 
 require_once __DIR__ . '/BaseController.php';
+require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../models/Student.php';
+require_once __DIR__ . '/../models/Course.php';
+require_once __DIR__ . '/../models/Enrollment.php';
 
 class StudentController extends BaseController
 {
     private $studentModel;
+    private $courseModel;
+    private $enrollmentModel;
 
     public function __construct()
     {
-        $this->studentModel = new Student();
+        $this->studentModel    = new Student();
+        $this->courseModel     = new Course();
+        $this->enrollmentModel = new Enrollment();
     }
-
-    // afficher le dashboard avec tous les cours et les cours de l'étudiant
-public function dashboard() {
-    // vérifier que l'étudiant est connecté
-    if (!Auth::check()) {
-        header("Location: /login");
+//login 
+    public function login()
+{
+    $this->render('auth/login');
+}
+//storelogin
+public function storeLogin()
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: /login');
         exit;
     }
 
-    // récupérer tous les cours
-    $courseModel = new Course(); // Assure-toi que Course.php existe dans models
-    $courses = $courseModel->getAll();
+    $email    = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-    // récupérer les cours de l'étudiant connecté
-    $myCourses = $this->studentModel->getCourses();
+    if (empty($email) || empty($password)) {
+        $this->render('auth/login', [
+            'error' => '   remplire tout les cases'
+        ]);
+        return;
+    }
 
-    // envoyer les données à la vue dashboard
-    $this->render('student/dashboard', [
-        'courses'   => $courses,
-        'myCourses' => $myCourses
-    ]);
+    $student = $this->studentModel->findByEmail($email);
+
+    if (!$student || !password_verify($password, $student['password'])) {
+        $this->render('auth/login', [
+            'error' => '  mots de pas ou email incorrect    '
+        ]);
+        return;
+    }
+
+    Auth::login($student['id']);
+    header('Location: /student/dashboard');
+    exit;
 }
 
+    // Dashboard étudiant
+    public function dashboard()
+    {
+        if (!Auth::check()) {
+            header("Location: /login");
+            exit;
+        }
 
-    // afficher tous les étudiants
+        $courses   = $this->courseModel->getAll();
+        $myCourses = $this->enrollmentModel->getStudentCourses($_SESSION['student_id']);
+
+        $this->render('student/dashboard', [
+            'courses'   => $courses,
+            'myCourses' => $myCourses
+        ]);
+    }
+
+    // Inscription à un cours
+    public function enroll()
+    {
+        if (!Auth::check()) {
+            header('Location: /login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /student/dashboard');
+            exit;
+        }
+
+        if (!Auth::checkCsrfToken($_POST['csrf_token'] ?? '')) {
+            die('CSRF token invalide');
+        }
+
+        $courseId  = (int) ($_POST['course_id'] ?? 0);
+        $studentId = $_SESSION['student_id'];
+
+        if ($courseId && !$this->enrollmentModel->isEnrolled($studentId, $courseId)) {
+            $this->enrollmentModel->enroll($studentId, $courseId);
+        }
+
+        header('Location: /student/dashboard');
+        exit;
+    }
+
+    // Afficher tous les étudiants
     public function index()
     {
         $students = $this->studentModel->getAll();
@@ -44,13 +109,13 @@ public function dashboard() {
         ]);
     }
 
-    // afficher formulaire
+    // Formulaire création étudiant
     public function create()
     {
         $this->render('students/create');
     }
 
-    // sauvegarder étudiant
+    // Sauvegarder nouvel étudiant
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -71,7 +136,7 @@ public function dashboard() {
         }
     }
 
-    // afficher formulaire update
+    // Formulaire update étudiant
     public function edit($id)
     {
         $student = $this->studentModel->findById($id);
@@ -86,7 +151,7 @@ public function dashboard() {
         ]);
     }
 
-    // update étudiant
+    // Mettre à jour étudiant
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -95,21 +160,21 @@ public function dashboard() {
 
             $this->studentModel->update($id, $name, $email);
 
-            header('Location: index.php?action=students');
+            header('Location: /students');
             exit;
         }
     }
-    // afficher formulaire register
+
+    // Formulaire inscription
     public function register()
     {
         $this->render('students/register');
     }
 
-    // traiter formulaire register
+    // Traiter inscription
     public function storeRegister()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
             $name     = $_POST['name'] ?? '';
             $email    = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -123,19 +188,25 @@ public function dashboard() {
 
             $this->studentModel->register($name, $email, $password);
 
-            // redirect login
             header('Location: /login');
             exit;
         }
     }
 
-
-    // supprimer étudiant
+    // Supprimer étudiant
     public function delete($id)
     {
         $this->studentModel->delete($id);
 
-        header('Location: index.php?action=students');
+        header('Location: /students');
         exit;
     }
+    //logout
+    public function logout()
+{
+    Auth::logout();
+    header('Location: /login');
+    exit;
+}
+
 }

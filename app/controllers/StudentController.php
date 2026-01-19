@@ -21,10 +21,10 @@ class StudentController extends BaseController
 //login 
     public function login()
 {
-    $this->render('auth/login');
+    $this->render('student/login');
 }
 //storelogin
-public function storeLogin()
+public function auth()
 {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: /login');
@@ -35,7 +35,7 @@ public function storeLogin()
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
-        $this->render('auth/login', [
+        $this->render('student/login', [
             'error' => '   remplire tout les cases'
         ]);
         return;
@@ -44,7 +44,7 @@ public function storeLogin()
     $student = $this->studentModel->findByEmail($email);
 
     if (!$student || !password_verify($password, $student['password'])) {
-        $this->render('auth/login', [
+        $this->render('student/login', [
             'error' => '  mots de pas ou email incorrect    '
         ]);
         return;
@@ -104,7 +104,7 @@ public function storeLogin()
     public function index()
     {
         $students = $this->studentModel->getAll();
-        $this->render('students/index', [
+        $this->render('student/dashboard', [
             'students' => $students
         ]);
     }
@@ -168,7 +168,7 @@ public function storeLogin()
     // Formulaire inscription
     public function register()
     {
-        $this->render('students/register');
+        $this->render('student/register');
     }
 
     // Traiter inscription
@@ -208,5 +208,4 @@ public function storeLogin()
     header('Location: /login');
     exit;
 }
-
 }

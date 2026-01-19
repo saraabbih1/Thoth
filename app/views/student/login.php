@@ -28,6 +28,7 @@
             Se connecter
         </button>
     </form>
+    <a href="/register">Reg</a>
   </div>
 </div>
 
